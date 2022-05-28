@@ -1,18 +1,14 @@
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const User = require('./models/user');
-const JwtStrategy=require('passport-jwt').Strategy;
+const JwtStrategy = require('passport-jwt').Strategy;
 const ExtractJwt = require('passport-jwt').ExtractJwt;
 const jwt = require('jsonwebtoken'); // used to create, sign, and verify tokens
 
 const config = require('./config.js');
 
-exports.local = passport.use(new LocalStrategy(User.authenticate()));
-passport.serializeUser(User.serializeUser());
-passport.deserializeUser(User.deserializeUser());
-
 exports.getToken = function(user) {
-    return jwt.sign(user, config.secretKey, {expiresIn: 3600});
+    return jwt.sign(user, config.secretKey, {expiresIn: 3600});//expires in 1hour
 };
 
 const opts = {};
@@ -37,4 +33,21 @@ exports.jwtPassport = passport.use(
     )
 );
 
+//Use JWT for authentication with passport
 exports.verifyUser = passport.authenticate('jwt', {session: false});
+
+// Check that the user has admin property
+exports.verifyAdmin = (req, res, next) => {
+    if (req.user.admin){
+        return next();
+    } else {
+        const err = new Error('You are not authorized to perform this operation!');
+        err.status = 403;
+        return next(err.message);
+    }
+};
+
+// Using username and password values to signup and login 
+exports.local = passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
