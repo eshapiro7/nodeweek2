@@ -41,12 +41,10 @@ exports.verifyAdmin = (req, res, next) => {
     if (req.user.admin){
         return next();
     } else {
-        const err = new Error('You are not authorized to perform this operation!');
-        err.status = 403;
-        return next(err.message);
+        const err = new Error('You are not authorized to perform this operation!')
+        return res.send(err.message);
     }
 };
-
 // Using username and password values to signup and login 
 exports.local = passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
