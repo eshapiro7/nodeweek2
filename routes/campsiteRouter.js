@@ -1,6 +1,8 @@
 const express = require('express');
 const Campsite = require('../models/campsite');
 const authenticate = require('../authenticate');
+const cors = require("./cors");
+
 
 const campsiteRouter = express.Router();
 
